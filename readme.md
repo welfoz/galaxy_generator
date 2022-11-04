@@ -1,5 +1,6 @@
-# Three.js Journey
+# Galaxy Generator
 
+Find it here: https://galaxy-generator-smoky.vercel.app/
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
 Run this followed commands:
@@ -14,3 +15,6 @@ npm run dev
 # Build for production in the dist/ directory
 npm run build
 ```
+
+Thanks Bruno Simon for the inspiration
+formation: https://threejs-journey.com/
