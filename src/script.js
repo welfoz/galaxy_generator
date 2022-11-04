@@ -25,12 +25,19 @@ const parameters = {
     radius: 5,
     a: 2,
     b: 2,
+    margin: 2,
     rotationX: 0,
     rotationY: 0,
     rotationZ: 0,
     puissance: 1,
-    bold: 0,
+    bold: 0.1,
     div: 7 / 100,
+    // particule density, up => more particules around the origin 
+    dispersion: 0,
+    centerDispersion: 1.1,
+    insideColor: "#ff0000",
+    outsideColor: "#00ccff",
+    colorGradient: 0,
     hypnose: {
         enable: false,
         directionUp: true,
@@ -80,25 +87,36 @@ const galaxyGenerator = () => {
     const angle = 2 * Math.PI / parameters.branchNumber
     let theta = angle
     const boldFactor = parameters.bold / (parameters.div * nbOfParticulePerBranch)
+    
+    // color
+    const insideColor = new THREE.Color(parameters.insideColor)
+    const outsideColor = new THREE.Color(parameters.outsideColor)
 
     for (let j = 0; j < parameters.branchNumber; j++) {
         // compute branch
         for (let i = 0; i < nbOfParticulePerBranch; i++) {
             const i3 = i * 3 + nbOfParticulePerBranch * 3 * j
-            
-            const x = increment * i
-            const newR = (parameters.radius * Math.pow(i, parameters.puissance)) / (Math.pow(nbOfParticulePerBranch, parameters.puissance))
+           
+            // position
+            const iDispersion =  i * Math.pow(i / nbOfParticulePerBranch, parameters.dispersion)
+            const x = increment * iDispersion
+            const newR = (parameters.radius * Math.pow(iDispersion, parameters.puissance)) / (Math.pow(nbOfParticulePerBranch, parameters.puissance))
+            const centerDispersion = Math.pow(Math.random(), parameters.centerDispersion) 
             
             // oldX and oldZ are there to rotate the branch of theta
-            const oldX = (newR * Math.cos(parameters.a * x) + (Math.random() - 0.5) * i * boldFactor ) 
-            const oldZ = newR * Math.sin(parameters.b * x) + (Math.random() - 0.5) * i * boldFactor 
+            const oldX = newR * Math.cos(parameters.a * x) + (Math.random() - 0.5) * iDispersion * boldFactor * centerDispersion 
+            const oldZ = newR * Math.sin(parameters.b * x) + (Math.random() - 0.5) * iDispersion * boldFactor * centerDispersion 
             particules[i3 + 0] = Math.cos(theta) * oldX + Math.sin(theta) * oldZ
-            particules[i3 + 1] = (Math.random() - 0.5) * 1
+            particules[i3 + 1] = (Math.random() - 0.5) * iDispersion * boldFactor * centerDispersion 
             particules[i3 + 2] = - Math.sin(theta) * oldX + Math.cos(theta) * oldZ
     
-            colors[i3 + 0] = 1
-            colors[i3 + 1] = 1
-            colors[i3 + 2] = 1
+            // color
+            const gradient = (x / parameters.radius) + parameters.colorGradient
+            const mixColor = insideColor.clone().lerp(outsideColor, gradient > 1? 1: gradient < 0? 0: gradient)
+
+            colors[i3 + 0] = mixColor.r
+            colors[i3 + 1] = mixColor.g
+            colors[i3 + 2] = mixColor.b
         }   
         theta += angle 
 
@@ -127,18 +145,44 @@ galaxyGenerator()
 /**
  * GUI
  */
-gui.add(parameters, "count", 1, 100000, 100).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "branchNumber", 1, 30, 1).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "size", 0.01, 0.5, 0.01).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "radius", 1, 100, 1).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "a", 0, 100, 1).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "b", 0, 100, 1).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "rotationX", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "rotationY", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "rotationZ", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "bold", 0, 1, 0.01).onFinishChange(() => {galaxyGenerator()})
-gui.add(parameters, "puissance", 1, 25, 0.5).onFinishChange(() => {galaxyGenerator()})
-gui.add(functions, "enableHypnose")
+gui.add(parameters, "count", 1, 100000, 100).onFinishChange(() => {galaxyGenerator()}).name("Star Count")
+gui.add(parameters, "size", 0.01, 0.5, 0.01).onFinishChange(() => {galaxyGenerator()}).name("Star Size")
+gui.add(parameters, "radius", 1, 50, 1).onFinishChange(() => {galaxyGenerator()}).name("Galaxy Radius")
+
+const branchFolder = gui.addFolder("Branch")
+branchFolder.add(parameters, "branchNumber", 1, 20, 1).onFinishChange(() => {galaxyGenerator()}).name("Branch Count")
+branchFolder.add(parameters, "puissance", 1, 50, 0.5).onFinishChange(() => {galaxyGenerator()}).name("Branch Flatness")
+branchFolder.add(parameters, "margin", 0, 10, 1).onFinishChange((value) => {
+    parameters.a = value
+    parameters.b = value
+    galaxyGenerator()
+}).name("Spiral Proximity")
+
+
+const distributionFolder = gui.addFolder("Distribution")
+distributionFolder.add(parameters, "bold", 0, 0.5, 0.001).onFinishChange(() => {galaxyGenerator()}).name("Star Randomness")
+distributionFolder.add(parameters, "dispersion", 0, 3, 0.01).onFinishChange(() => {galaxyGenerator()}).name("Origin Density")
+distributionFolder.add(parameters, "centerDispersion", 0, 5, 0.01).onFinishChange(() => {galaxyGenerator()}).name("Middle Branch Density")
+distributionFolder.close()
+
+const rotationFolder = gui.addFolder("Rotation")
+rotationFolder.add(parameters, "rotationX", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
+rotationFolder.add(parameters, "rotationY", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
+rotationFolder.add(parameters, "rotationZ", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
+rotationFolder.close()
+
+const colorFolder = gui.addFolder("Color")
+colorFolder.addColor(parameters, "insideColor").onFinishChange(() => {galaxyGenerator()})
+colorFolder.addColor(parameters, "outsideColor").onFinishChange(() => {galaxyGenerator()})
+colorFolder.add(parameters, "colorGradient", -1, 1, 0.01).onFinishChange(() => {galaxyGenerator()})
+colorFolder.close()
+
+const advancedFolder = gui.addFolder("Advanced")
+advancedFolder.add(parameters, "a", 0, 10, 1).onFinishChange(() => {galaxyGenerator()}).listen()
+advancedFolder.add(parameters, "b", 0, 10, 1).onFinishChange(() => {galaxyGenerator()}).listen()
+advancedFolder.add(functions, "enableHypnose")
+advancedFolder.close()
+
 gui.add(functions, "reset")
 
 /**
@@ -170,14 +214,14 @@ window.addEventListener('resize', () =>
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 200)
 camera.position.x = 0
-camera.position.y = 30
+camera.position.y = 10
 camera.position.z = 0
 scene.add(camera)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
-controls.maxDistance = 100
+controls.maxDistance = 50
 controls.minDistance = 0.1
 
 /**
