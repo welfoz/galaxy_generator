@@ -56,7 +56,13 @@ const functions = {
         galaxyGenerator()
     },
     enableHypnose: () => {
-        parameters.hypnose.enable == true? parameters.hypnose.enable = false: parameters.hypnose.enable = true
+        if (parameters.hypnose.enable == true) {
+            parameters.hypnose.enable = false
+            parameters.rotationY = 0
+        } else {
+            parameters.hypnose.enable = true
+            parameters.rotationY == 0? parameters.rotationY = 0.1: null
+        }
     },
     reset: () => {
         gui.reset()
@@ -167,7 +173,7 @@ distributionFolder.close()
 
 const rotationFolder = gui.addFolder("Rotation")
 rotationFolder.add(parameters, "rotationX", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
-rotationFolder.add(parameters, "rotationY", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
+rotationFolder.add(parameters, "rotationY", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()}).listen()
 rotationFolder.add(parameters, "rotationZ", 0, 1, 0.001).onFinishChange(() => {galaxyGenerator()})
 rotationFolder.close()
 
