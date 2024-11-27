@@ -41,7 +41,7 @@ const params = {
   outsideColor: { value: null, defaultValue: "#00ccff", min: "#000000", max: "#ffffff", name: "Outside Color", folder: FOLDERS.COLOR },
   colorGradient: { value: null, defaultValue: 0, min: -1, max: 1, precision: 0.01, name: "Color Gradient", folder: FOLDERS.COLOR },
 //   rotationX: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001, name: "X Rotation", folder: FOLDERS.ROTATION },
-  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.05, precision: 0.001, name: "Y Rotation", folder: FOLDERS.ROTATION },
+  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.025, precision: 0.001, name: "Y Rotation", folder: FOLDERS.ROTATION },
 //   rotationZ: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001, name: "Z Rotation", folder: FOLDERS.ROTATION },
   a: { value: null, defaultValue: 2, min: 0, max: 20, precision: 0.01, name: "A", folder: FOLDERS.ADVANCED },
   b: { value: null, defaultValue: 2, min: 0, max: 20, precision: 0.01, name: "B", folder: FOLDERS.ADVANCED },
