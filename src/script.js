@@ -8,7 +8,7 @@ import * as dat from "lil-gui";
  */
 // Debug
 const guiRandomButton = new dat.GUI()
-const guiParameters = new dat.GUI().title("Crazy Parameters Here")
+const guiParameters = new dat.GUI().title("Customize the parameters")
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
@@ -222,7 +222,7 @@ const guiInit = () => {
   }
 
   // add functions
-  guiRandomButton.add(functions, "random").name("Random Generator");
+  guiRandomButton.add(functions, "random").name("Generate a new galaxy");
   guiParameters.add(functions, "reset").name("Reset");
 
   // close gui
