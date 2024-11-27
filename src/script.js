@@ -7,7 +7,7 @@ import * as dat from "lil-gui";
  * Base
  */
 // Debug
-const guiRandomButton = new dat.GUI()
+const guiButtons = new dat.GUI();
 const guiParameters = new dat.GUI().title("Customize the parameters")
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -77,6 +77,9 @@ const functions = {
     }
     galaxyGenerator();
   },
+  codeSourceLink: () => {
+    window.open("https://github.com/welfoz/this_galaxy_does_not_exist_threejs", "_blank");
+  }
 };
 
 let particuleGeometry = null;
@@ -222,8 +225,9 @@ const guiInit = () => {
   }
 
   // add functions
-  guiRandomButton.add(functions, "random").name("Generate a new galaxy &#128640;");
   guiParameters.add(functions, "reset").name("Reset");
+  guiButtons.add(functions, "codeSourceLink").name("Check the source code ⭐");
+  guiButtons.add(functions, "random").name("Generate a new galaxy &#128640;");
 
   // close gui
   guiParameters.close();
