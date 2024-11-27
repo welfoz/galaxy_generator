@@ -1,6 +1,9 @@
 # Galaxy Generator
 
 Find it here: https://galaxy-generator-smoky.vercel.app/
+
+Put a star if you liked it ⭐⭐⭐
+
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
 Run this followed commands:
