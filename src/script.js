@@ -226,7 +226,7 @@ const guiInit = () => {
 
   // add functions
   guiParameters.add(functions, "reset").name("Reset");
-  guiButtons.add(functions, "codeSourceLink").name("Check the source code ⭐");
+  guiButtons.add(functions, "codeSourceLink").name("Check out the source code ⭐");
   guiButtons.add(functions, "random").name("Generate a new galaxy &#128640;");
 
   // close gui
