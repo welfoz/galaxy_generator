@@ -6,6 +6,8 @@ import * as dat from "lil-gui";
 /**
  * Base
  */
+// Debug
+const gui = new dat.GUI();
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
@@ -23,9 +25,9 @@ const params = {
   a: { value: null, defaultValue: 2, min: 0, max: 10 },
   b: { value: null, defaultValue: 2, min: 0, max: 10 },
   margin: { value: null, defaultValue: 2, min: 0, max: 10 },
-  rotationX: { value: null, defaultValue: 0, min: 0, max: 0.2 },
-  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.2 },
-  rotationZ: { value: null, defaultValue: 0, min: 0, max: 0.2 },
+  rotationX: { value: null, defaultValue: 0, min: 0, max: 0 },
+  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.05 },
+  rotationZ: { value: null, defaultValue: 0, min: 0, max: 0 },
   puissance: { value: null, defaultValue: 1, min: 1, max: 50 },
   bold: { value: null, defaultValue: 0.1, min: 0, max: 0.5 },
   div: { value: null, defaultValue: 7 / 100, min: 0.01, max: 0.2 },
@@ -157,26 +159,27 @@ const galaxyGenerator = () => {
  * GUI
  */
 const guiInit = () => {
-  // Debug
-  const gui = new dat.GUI();
   gui
     .add(params.count, "value", params.count.min, params.count.max, 100)
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Star Count");
+    .name("Star Count")
+    .listen();
   gui
     .add(params.size, "value", params.size.min, params.size.max, 0.01)
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Star Size");
+    .name("Star Size")
+    .listen();
   gui
     .add(params.radius, "value", params.radius.min, params.radius.max, 1)
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Galaxy Radius");
+    .name("Galaxy Radius")
+    .listen();
 
   const branchFolder = gui.addFolder("Branch");
   branchFolder
@@ -190,7 +193,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Branch Count");
+    .name("Branch Count")
+    .listen();
   branchFolder
     .add(
       params.puissance,
@@ -202,7 +206,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Branch Flatness");
+    .name("Branch Flatness")
+    .listen();
   branchFolder
     .add(params.margin, "value", params.margin.min, params.margin.max, 1)
     .onFinishChange((value) => {
@@ -210,7 +215,8 @@ const guiInit = () => {
       params.b.value = value;
       galaxyGenerator();
     })
-    .name("Spiral Proximity");
+    .name("Spiral Proximity")
+    .listen();
 
   const distributionFolder = gui.addFolder("Distribution");
   distributionFolder
@@ -218,7 +224,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Star Randomness");
+    .name("Star Randomness")
+    .listen();
   distributionFolder
     .add(
       params.dispersion,
@@ -230,7 +237,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Origin Density");
+    .name("Origin Density")
+    .listen();
   distributionFolder
     .add(
       params.centerDispersion,
@@ -242,8 +250,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Middle Branch Density");
-  distributionFolder.close();
+    .name("Middle Branch Density")
+    .listen();
 
   const rotationFolder = gui.addFolder("Rotation");
   rotationFolder
@@ -257,7 +265,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("X Rotation");
+    .name("X Rotation")
+    .listen();
   rotationFolder
     .add(
       params.rotationY,
@@ -269,7 +278,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Y Rotation");
+    .name("Y Rotation")
+    .listen();
   rotationFolder
     .add(
       params.rotationZ,
@@ -281,8 +291,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Z Rotation");
-  rotationFolder.close();
+    .name("Z Rotation")
+    .listen();
 
   const colorFolder = gui.addFolder("Color");
   colorFolder
@@ -290,13 +300,15 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Inside Color");
+    .name("Inside Color")
+    .listen();
   colorFolder
     .addColor(params.outsideColor, "value")
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Outside Color");
+    .name("Outside Color")
+    .listen();
   colorFolder
     .add(
       params.colorGradient,
@@ -308,8 +320,8 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("Color Gradient");
-  colorFolder.close();
+    .name("Color Gradient")
+    .listen();
 
   const advancedFolder = gui.addFolder("Advanced");
   advancedFolder
@@ -317,13 +329,15 @@ const guiInit = () => {
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("A");
+    .name("A")
+    .listen();
   advancedFolder
     .add(params.b, "value", params.b.min, params.b.max, 1)
     .onFinishChange(() => {
       galaxyGenerator();
     })
-    .name("B");
+    .name("B")
+    .listen();
   advancedFolder.close();
 
   gui.add(functions, "random").name("Random Generator");
@@ -332,6 +346,10 @@ const guiInit = () => {
   // close gui
   gui.close();
 };
+
+// init params randomly and init gui
+functions.random();
+guiInit();
 
 /**
  * Sizes
@@ -375,10 +393,6 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.maxDistance = 50;
 controls.minDistance = 0.1;
-
-// init params randomly and init gui
-functions.random();
-guiInit();
 
 /**
  * Renderer
