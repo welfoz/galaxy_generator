@@ -7,7 +7,8 @@ import * as dat from "lil-gui";
  * Base
  */
 // Debug
-const gui = new dat.GUI();
+const guiRandomButton = new dat.GUI()
+const guiParameters = new dat.GUI().title("Crazy Parameters Here")
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
 
@@ -175,7 +176,7 @@ const galaxyGenerator = () => {
  */
 const guiInit = () => {
   const guiAdd = (key) => {
-    return gui
+    return guiParameters
       .add(params[key], "value", params[key].min, params[key].max, params[key].precision)
       .onFinishChange(() => {
         galaxyGenerator();
@@ -203,7 +204,7 @@ const guiInit = () => {
   // create folders
   const folders = {};
   for (const folder of Object.values(FOLDERS)) {
-    folders[folder] = gui.addFolder(folder);
+    folders[folder] = guiParameters.addFolder(folder);
   }
 
 
@@ -221,11 +222,11 @@ const guiInit = () => {
   }
 
   // add functions
-  gui.add(functions, "random").name("Random Generator");
-  gui.add(functions, "reset").name("Reset");
+  guiRandomButton.add(functions, "random").name("Random Generator");
+  guiParameters.add(functions, "reset").name("Reset");
 
   // close gui
-  gui.close();
+  guiParameters.close();
 };
 
 // init params randomly and init gui
