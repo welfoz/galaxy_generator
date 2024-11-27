@@ -18,24 +18,24 @@ const scene = new THREE.Scene();
 // scene.add(axesHelpers)
 
 const params = {
-  count: { value: null, defaultValue: 10000, min: 1000, max: 100000, precision: 100 },
-  size: { value: null, defaultValue: 0.01, min: 0.001, max: 0.1, precision: 0.01 },
-  branchNumber: { value: null, defaultValue: 2, min: 1, max: 20, precision: 1 },
-  radius: { value: null, defaultValue: 5, min: 1, max: 50, precision: 1 },
-  a: { value: null, defaultValue: 2, min: 0, max: 10, precision: 0.01 },
-  b: { value: null, defaultValue: 2, min: 0, max: 10, precision: 0.01 },
-  margin: { value: null, defaultValue: 2, min: 0, max: 10, precision: 1 },
-  rotationX: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001 },
-  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.05, precision: 0.001 },
-  rotationZ: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001 },
-  puissance: { value: null, defaultValue: 1, min: 1, max: 50, precision: 0.5 },
-  bold: { value: null, defaultValue: 0.1, min: 0, max: 0.5, precision: 0.001 },
-  div: { value: null, defaultValue: 7 / 100, min: 0.01, max: 0.2, precision: 0.01 },
-  dispersion: { value: null, defaultValue: 0, min: 0, max: 3, precision: 0.01 },
-  centerDispersion: { value: null, defaultValue: 1.1, min: 0, max: 5, precision: 0.01 },
-  insideColor: { value: null, defaultValue: "#ff0000", min: "#000000", max: "#ffffff" },
-  outsideColor: { value: null, defaultValue: "#00ccff", min: "#000000", max: "#ffffff" },
-  colorGradient: { value: null, defaultValue: 0, min: -1, max: 1, precision: 0.01 },
+  count: { value: null, defaultValue: 10000, min: 1000, max: 100000, precision: 100, name: "Star Count" },
+  size: { value: null, defaultValue: 0.01, min: 0.001, max: 0.1, precision: 0.01, name: "Star Size" },
+  branchNumber: { value: null, defaultValue: 2, min: 1, max: 20, precision: 1, name: "Branch Count" },
+  radius: { value: null, defaultValue: 5, min: 1, max: 50, precision: 1, name: "Galaxy Radius" },
+  a: { value: null, defaultValue: 2, min: 0, max: 20, precision: 0.01, name: "A" },
+  b: { value: null, defaultValue: 2, min: 0, max: 20, precision: 0.01, name: "B" },
+  margin: { value: null, defaultValue: 2, min: 0, max: 10, precision: 1, name: "Spiral Proximity" },
+  rotationX: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001, name: "X Rotation" },
+  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.05, precision: 0.001, name: "Y Rotation" },
+  rotationZ: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001, name: "Z Rotation" },
+  puissance: { value: null, defaultValue: 1, min: 1, max: 50, precision: 0.5, name: "Branch Flatness" },
+  bold: { value: null, defaultValue: 0.1, min: 0, max: 0.5, precision: 0.001, name: "Star Randomness" },
+  div: { value: null, defaultValue: 7 / 100, min: 0.01, max: 0.2, precision: 0.01, name: "Division" },
+  dispersion: { value: null, defaultValue: 0, min: 0, max: 3, precision: 0.01, name: "Origin Density" },
+  centerDispersion: { value: null, defaultValue: 1.1, min: 0, max: 5, precision: 0.01, name: "Middle Branch Density" },
+  insideColor: { value: null, defaultValue: "#ff0000", min: "#000000", max: "#ffffff", name: "Inside Color" },
+  outsideColor: { value: null, defaultValue: "#00ccff", min: "#000000", max: "#ffffff", name: "Outside Color" },
+  colorGradient: { value: null, defaultValue: 0, min: -1, max: 1, precision: 0.01, name: "Color Gradient" },
 };
 
 const functions = {
@@ -166,140 +166,44 @@ const galaxyGenerator = () => {
  * GUI
  */
 const guiInit = () => {
-  gui
-    .add(params.count, "value", params.count.min, params.count.max, params.count.precision)
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Star Count")
-    .listen();
-  gui
-    .add(params.size, "value", params.size.min, params.size.max, params.size.precision)
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Star Size")
-    .listen();
-  gui
-    .add(params.radius, "value", params.radius.min, params.radius.max, params.radius.precision)
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Galaxy Radius")
-    .listen();
+  const guiAdd = (key) => {
+    return gui
+      .add(params[key], "value", params[key].min, params[key].max, params[key].precision)
+      .onFinishChange(() => {
+        galaxyGenerator();
+      })
+      .name(params[key].name)
+      .listen();
+  };
+
+  const guiAddToFolder = (folder, key) => {
+    return folder.add(params[key], "value", params[key].min, params[key].max, params[key].precision)
+      .onFinishChange(() => {
+        galaxyGenerator();
+      })
+      .name(params[key].name)
+      .listen();
+  };
+
+  guiAdd("count");
+  guiAdd("size");
+  guiAdd("radius");
 
   const branchFolder = gui.addFolder("Branch");
-  branchFolder
-    .add(
-      params.branchNumber,
-      "value",
-      params.branchNumber.min,
-      params.branchNumber.max,
-      params.branchNumber.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Branch Count")
-    .listen();
-  branchFolder
-    .add(
-      params.puissance,
-      "value",
-      params.puissance.min,
-      params.puissance.max,
-      params.puissance.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Branch Flatness")
-    .listen();
-  branchFolder
-    .add(params.margin, "value", params.margin.min, params.margin.max, params.margin.precision)
-    .onFinishChange((value) => {
-      params.a.value = value;
-      params.b.value = value;
-      galaxyGenerator();
-    })
-    .name("Spiral Proximity")
-    .listen();
+  guiAddToFolder(branchFolder, "branchNumber");
+  guiAddToFolder(branchFolder, "puissance");
+  guiAddToFolder(branchFolder, "margin");
+
 
   const distributionFolder = gui.addFolder("Distribution");
-  distributionFolder
-    .add(params.bold, "value", params.bold.min, params.bold.max, params.bold.precision)
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Star Randomness")
-    .listen();
-  distributionFolder
-    .add(
-      params.dispersion,
-      "value",
-      params.dispersion.min,
-      params.dispersion.max,
-      params.dispersion.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Origin Density")
-    .listen();
-  distributionFolder
-    .add(
-      params.centerDispersion,
-      "value",
-      params.centerDispersion.min,
-      params.centerDispersion.max,
-      params.centerDispersion.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Middle Branch Density")
-    .listen();
+  guiAddToFolder(distributionFolder, "bold");
+  guiAddToFolder(distributionFolder, "dispersion");
+  guiAddToFolder(distributionFolder, "centerDispersion");
 
   const rotationFolder = gui.addFolder("Rotation");
-  rotationFolder
-    .add(
-      params.rotationX,
-      "value",
-      params.rotationX.min,
-      params.rotationX.max,
-      params.rotationX.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("X Rotation")
-    .listen();
-  rotationFolder
-    .add(
-      params.rotationY,
-      "value",
-      params.rotationY.min,
-      params.rotationY.max,
-      params.rotationY.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Y Rotation")
-    .listen();
-  rotationFolder
-    .add(
-      params.rotationZ,
-      "value",
-      params.rotationZ.min,
-      params.rotationZ.max,
-      params.rotationZ.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Z Rotation")
-    .listen();
+  guiAddToFolder(rotationFolder, "rotationX");
+  guiAddToFolder(rotationFolder, "rotationY");
+  guiAddToFolder(rotationFolder, "rotationZ");
 
   const colorFolder = gui.addFolder("Color");
   colorFolder
@@ -316,35 +220,11 @@ const guiInit = () => {
     })
     .name("Outside Color")
     .listen();
-  colorFolder
-    .add(
-      params.colorGradient,
-      "value",
-      params.colorGradient.min,
-      params.colorGradient.max,
-      params.colorGradient.precision
-    )
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("Color Gradient")
-    .listen();
+  guiAddToFolder(colorFolder, "colorGradient");
 
   const advancedFolder = gui.addFolder("Advanced");
-  advancedFolder
-    .add(params.a, "value", params.a.min, params.a.max, params.a.precision)
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("A")
-    .listen();
-  advancedFolder
-    .add(params.b, "value", params.b.min, params.b.max, params.b.precision)
-    .onFinishChange(() => {
-      galaxyGenerator();
-    })
-    .name("B")
-    .listen();
+  guiAddToFolder(advancedFolder, "a");
+  guiAddToFolder(advancedFolder, "b");
   advancedFolder.close();
 
   gui.add(functions, "random").name("Random Generator");
