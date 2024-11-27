@@ -1,6 +1,6 @@
 # Galaxy Generator
 
-Find it here: https://galaxy-generator-smoky.vercel.app/
+Find it here: https://thisgalaxydoesnotexist.vercel.app/
 
 Put a star if you liked it ⭐⭐⭐
 
