@@ -16,25 +16,24 @@ const scene = new THREE.Scene();
 // scene.add(axesHelpers)
 
 const params = {
-  count: { value: 10000, min: 1000, max: 100000 },
-  size: { value: 0.01, min: 0.001, max: 0.1 },
-  branchNumber: { value: 2, min: 1, max: 20 },
-  radius: { value: 5, min: 1, max: 50 },
-  a: { value: 2, min: 0, max: 10 },
-  b: { value: 2, min: 0, max: 10 },
-  margin: { value: 2, min: 0, max: 10 },
-  rotationX: { value: 0, min: 0, max: 0.2 },
-  rotationY: { value: 0, min: 0, max: 0.2 },
-  rotationZ: { value: 0, min: 0, max: 0.2 },
-  puissance: { value: 1, min: 1, max: 50 },
-  bold: { value: 0.1, min: 0, max: 0.5 },
-  div: { value: 7 / 100, min: 0.01, max: 0.2 },
-  // particule density, up => more particules around the origin
-  dispersion: { value: 0, min: 0, max: 3 },
-  centerDispersion: { value: 1.1, min: 0, max: 5 },
-  insideColor: { value: "#ff0000", min: "#000000", max: "#ffffff" },
-  outsideColor: { value: "#00ccff", min: "#000000", max: "#ffffff" },
-  colorGradient: { value: 0, min: -1, max: 1 },
+  count: { value: null, defaultValue: 10000, min: 1000, max: 100000 },
+  size: { value: null, defaultValue: 0.01, min: 0.001, max: 0.1 },
+  branchNumber: { value: null, defaultValue: 2, min: 1, max: 20 },
+  radius: { value: null, defaultValue: 5, min: 1, max: 50 },
+  a: { value: null, defaultValue: 2, min: 0, max: 10 },
+  b: { value: null, defaultValue: 2, min: 0, max: 10 },
+  margin: { value: null, defaultValue: 2, min: 0, max: 10 },
+  rotationX: { value: null, defaultValue: 0, min: 0, max: 0.2 },
+  rotationY: { value: null, defaultValue: 0, min: 0, max: 0.2 },
+  rotationZ: { value: null, defaultValue: 0, min: 0, max: 0.2 },
+  puissance: { value: null, defaultValue: 1, min: 1, max: 50 },
+  bold: { value: null, defaultValue: 0.1, min: 0, max: 0.5 },
+  div: { value: null, defaultValue: 7 / 100, min: 0.01, max: 0.2 },
+  dispersion: { value: null, defaultValue: 0, min: 0, max: 3 },
+  centerDispersion: { value: null, defaultValue: 1.1, min: 0, max: 5 },
+  insideColor: { value: null, defaultValue: "#ff0000", min: "#000000", max: "#ffffff" },
+  outsideColor: { value: null, defaultValue: "#00ccff", min: "#000000", max: "#ffffff" },
+  colorGradient: { value: null, defaultValue: 0, min: -1, max: 1 },
 };
 
 const functions = {
@@ -51,6 +50,12 @@ const functions = {
       } else {
         params[key].value = getRandom(params[key].min, params[key].max);
       }
+    }
+    galaxyGenerator();
+  },
+  reset: () => {
+    for (const key in params) {
+      params[key].value = params[key].defaultValue;
     }
     galaxyGenerator();
   },
@@ -322,6 +327,7 @@ const guiInit = () => {
   advancedFolder.close();
 
   gui.add(functions, "random").name("Random Generator");
+  gui.add(functions, "reset").name("Reset");
 
   // close gui
   gui.close();
@@ -370,7 +376,8 @@ controls.enableDamping = true;
 controls.maxDistance = 50;
 controls.minDistance = 0.1;
 
-galaxyGenerator();
+// init params randomly and init gui
+functions.random();
 guiInit();
 
 /**
