@@ -27,7 +27,7 @@ const FOLDERS = {
 }
 
 const params = {
-  count: { value: null, defaultValue: 10000, min: 1000, max: 100000, precision: 100, name: "Star Count", folder: null },
+  count: { value: null, defaultValue: 10000, min: 10000, max: 1000000, precision: 1000, name: "Star Count", folder: null },
   size: { value: null, defaultValue: 0.01, min: 0.001, max: 0.05, precision: 0.001, name: "Star Size", folder: null },
   branchNumber: { value: null, defaultValue: 2, min: 1, max: 20, precision: 1, name: "Branch Count", folder: null },
   radius: { value: null, defaultValue: 5, min: 5, max: 10, precision: 1, name: "Galaxy Radius", folder: null },
