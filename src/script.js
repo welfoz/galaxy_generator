@@ -222,7 +222,7 @@ const guiInit = () => {
   }
 
   // add functions
-  guiRandomButton.add(functions, "random").name("Generate a new galaxy");
+  guiRandomButton.add(functions, "random").name("Generate a new galaxy &#128640;");
   guiParameters.add(functions, "reset").name("Reset");
 
   // close gui
