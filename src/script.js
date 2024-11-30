@@ -33,7 +33,7 @@ const params = {
   radius: { value: null, defaultValue: 5, min: 5, max: 10, precision: 1, name: "Galaxy Radius", folder: null },
   puissance: { value: null, defaultValue: 1, min: 1, max: 20, precision: 0.5, name: "Branch Flatness", folder: FOLDERS.BRANCH },
   margin: { value: null, defaultValue: 2, min: 0, max: 10, precision: 1, name: "Spiral Proximity", folder: FOLDERS.DISTRIBUTION },
-  bold: { value: null, defaultValue: 0.1, min: 0, max: 0.1, precision: 0.001, name: "Star Randomness", folder: FOLDERS.DISTRIBUTION },
+  bold: { value: null, defaultValue: 0.1, min: 0.05, max: 0.2, precision: 0.001, name: "Star Randomness", folder: FOLDERS.DISTRIBUTION },
   div: { value: null, defaultValue: 7 / 100, min: 0.01, max: 0.2, precision: 0.01, name: "Division", folder: FOLDERS.DISTRIBUTION },
   dispersion: { value: null, defaultValue: 0, min: 0, max: 3, precision: 0.01, name: "Origin Density", folder: FOLDERS.DISTRIBUTION },
   centerDispersion: { value: null, defaultValue: 1.1, min: 0, max: 5, precision: 0.01, name: "Middle Branch Density", folder: FOLDERS.DISTRIBUTION },
@@ -45,8 +45,13 @@ const params = {
 //   rotationZ: { value: null, defaultValue: 0, min: 0, max: 0, precision: 0.001, name: "Z Rotation", folder: FOLDERS.ROTATION },
   a: { value: null, defaultValue: 2, min: 0, max: 20, precision: 0.01, name: "A", folder: FOLDERS.ADVANCED },
   b: { value: null, defaultValue: 2, min: 0, max: 20, precision: 0.01, name: "B", folder: FOLDERS.ADVANCED },
+  xSpeed: { value: null, defaultValue: 0.03, min: 0, max: 0.06, precision: 0.001, name: "X Speed", folder: FOLDERS.ADVANCED },
+  zSpeed: { value: null, defaultValue: 0.03, min: 0, max: 0.06, precision: 0.001, name: "Z Speed", folder: FOLDERS.ADVANCED },
+  ySpeed: { value: null, defaultValue: 0.015, min: 0, max: 0.02, precision: 0.001, name: "Y Speed", folder: FOLDERS.ADVANCED },
+  changeRandomSeconds: { value: null, defaultValue: 1, min: 0, max: 3, precision: 1, name: "Change Random Seconds", folder: FOLDERS.ADVANCED },
 };
 
+let didReset = false;
 const functions = {
   random: () => {
     // Helper function to get random number in range with precision
@@ -75,6 +80,7 @@ const functions = {
     for (const key in params) {
       params[key].value = params[key].defaultValue;
     }
+    didReset = true;
     galaxyGenerator();
   },
   codeSourceLink: () => {
@@ -289,13 +295,64 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+
 /**
  * Animate
- */
+*/
+let directionX = 1; // 1 for right, -1 for left
+let directionZ = 1; // 1 for up, -1 for down
+let directionY = 1; // 1 for up, -1 for down
+let lastRandomChangeDate = new Date();
 const tick = () => {
+  const now = Date.now();
+
+  console.log(now - lastRandomChangeDate);
+  console.log(params.changeRandomSeconds.value * 1000);
+  if (!lastRandomChangeDate || now - lastRandomChangeDate > params.changeRandomSeconds.value * 1000) {
+    console.log("change random");
+    if (!didReset) {
+      functions.random();
+      lastRandomChangeDate = now;
+    }
+  }
+
+  // Update galaxy rotation
   particuleMesh.rotateY(params.rotationY.value);
-//   particuleMesh.rotateX(params.rotationX.value);
-//   particuleMesh.rotateZ(params.rotationZ.value);
+
+  // Get the boundaries in world space
+  const frustumHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.y;
+  const frustumWidth = frustumHeight * camera.aspect;
+
+  const xMin = -frustumWidth / 2;
+  const xMax = frustumWidth / 2;
+  const zMin = -frustumHeight / 2;
+  const zMax = frustumHeight / 2;
+
+  // Move galaxy within boundaries
+  particuleMesh.position.x += params.xSpeed.value * directionX;
+  particuleMesh.position.z += params.zSpeed.value * directionZ; // z acts as "y" in top-down view
+  particuleMesh.position.y += params.ySpeed.value * directionY;
+
+  // Reverse direction only if galaxy crosses the boundary
+  if (particuleMesh.position.x >= xMax || particuleMesh.position.x <= xMin) {
+    directionX *= -1;
+    particuleMesh.position.x = THREE.MathUtils.clamp(particuleMesh.position.x, xMin, xMax);
+  }
+
+  if (particuleMesh.position.z >= zMax || particuleMesh.position.z <= zMin) {
+    directionZ *= -1;
+    particuleMesh.position.z = THREE.MathUtils.clamp(particuleMesh.position.z, zMin, zMax);
+  }
+
+  const yMin = -3;
+  const yMax = 3;
+  if (particuleMesh.position.y >= yMax || particuleMesh.position.y <= yMin) {
+    directionY *= -1;
+    particuleMesh.position.y = THREE.MathUtils.clamp(particuleMesh.position.y, yMin, yMax);
+  }
+
+
+  // Reverse direction if it reaches the boundary
 
   // Update controls
   controls.update();
